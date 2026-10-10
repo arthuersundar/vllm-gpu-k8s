@@ -12,5 +12,12 @@ apiKeySecret: vllm-secret     # created with kubectl, never in git
 cacheSize: 50Gi               # PVC for downloaded model weights
 shmSize: 8Gi                  # shared memory, the K8s equivalent of --ipc=host
 
+resources:
+  cpu: "2"
+  memoryRequest: 12Gi         # g5.xlarge has 16GiB total; leave room for system pods
+  memoryLimit: 14Gi
+
+startupTimeoutChecks: 60      # x 10s = up to 10 minutes to download/load the model
+
 service:
   port: 8000

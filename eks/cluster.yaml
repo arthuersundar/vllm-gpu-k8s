@@ -1,0 +1,33 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+metadata:
+  name: vllm-gpu
+  region: us-east-1
+
+iam:
+  withOIDC: true              # needed for the EBS CSI driver's IAM role
+
+addons:
+  - name: aws-ebs-csi-driver  # lets PVCs (model cache) get EBS volumes
+    wellKnownPolicies:
+      ebsCSIController: true
+
+managedNodeGroups:
+  - name: system              # small CPU node for cluster add-ons
+    instanceType: t3.medium
+    desiredCapacity: 1
+    minSize: 1
+    maxSize: 1
+
+  - name: gpu
+    instanceType: g5.xlarge   # 1x A10G 24GB, 4 vCPU, 16GiB RAM
+    desiredCapacity: 1
+    minSize: 0
+    maxSize: 1
+    volumeSize: 100           # vLLM image + model weights
+    labels:
+      workload: gpu
+    taints:
+      - key: nvidia.com/gpu
+        value: "true"
+        effect: NoSchedule

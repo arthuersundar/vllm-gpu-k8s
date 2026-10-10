@@ -35,18 +35,18 @@ spec:
             - containerPort: 8000
           resources:
             requests:
-              cpu: "2"
-              memory: 16Gi
+              cpu: {{ .Values.resources.cpu | quote }}
+              memory: {{ .Values.resources.memoryRequest }}
               nvidia.com/gpu: {{ .Values.gpuCount }}
             limits:
-              memory: 24Gi
+              memory: {{ .Values.resources.memoryLimit }}
               nvidia.com/gpu: {{ .Values.gpuCount }}
-          startupProbe:          # 60 checks x 10s = up to 10 minutes to download/load the model
+          startupProbe:          # startupTimeoutChecks x 10s to download/load the model
             httpGet:
               path: /health
               port: 8000
             periodSeconds: 10
-            failureThreshold: 60
+            failureThreshold: {{ .Values.startupTimeoutChecks }}
           readinessProbe:
             httpGet:
               path: /health
