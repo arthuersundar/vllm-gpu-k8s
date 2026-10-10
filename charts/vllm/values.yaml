@@ -1,0 +1,16 @@
+image:
+  repository: vllm/vllm-openai
+  tag: latest
+  pullPolicy: IfNotPresent
+
+model: Qwen/Qwen3-8B
+maxModelLen: 8192
+gpuCount: 1
+
+apiKeySecret: vllm-secret     # created with kubectl, never in git
+
+cacheSize: 50Gi               # PVC for downloaded model weights
+shmSize: 8Gi                  # shared memory, the K8s equivalent of --ipc=host
+
+service:
+  port: 8000

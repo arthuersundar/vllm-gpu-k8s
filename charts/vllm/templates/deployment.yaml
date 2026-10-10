@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-vllm
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate          # one GPU: old pod must release it before new one starts
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-vllm
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-vllm
+    spec:
+      containers:
+        - name: vllm
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            - --model={{ .Values.model }}
+            - --max-model-len={{ .Values.maxModelLen }}
+          env:
+            - name: VLLM_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.apiKeySecret }}
+                  key: VLLM_API_KEY
+          ports:
+            - containerPort: 8000
+          resources:
+            limits:
+              nvidia.com/gpu: {{ .Values.gpuCount }}
+          startupProbe:          # model download + load can take minutes
+            httpGet:
+              path: /health
+              port: 8000
+            periodSeconds: 10
+            failureThreshold: 60
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            periodSeconds: 30
+          volumeMounts:
+            - name: model-cache
+              mountPath: /root/.cache/huggingface
+            - name: shm
+              mountPath: /dev/shm
+      volumes:
+        - name: model-cache
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-vllm-cache
+        - name: shm
+          emptyDir:
+            medium: Memory
+            sizeLimit: {{ .Values.shmSize }}

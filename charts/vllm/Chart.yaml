@@ -1,0 +1,5 @@
+apiVersion: v2
+name: vllm
+description: vLLM OpenAI-compatible model server on a GPU node
+version: 0.1.0
+appVersion: "latest"
