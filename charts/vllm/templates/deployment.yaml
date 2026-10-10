@@ -14,6 +14,10 @@ spec:
       labels:
         app: {{ .Release.Name }}-vllm
     spec:
+      tolerations:          # GPU nodes are often tainted to keep ordinary pods off them
+        - key: nvidia.com/gpu
+          operator: Exists
+          effect: NoSchedule
       containers:
         - name: vllm
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -30,9 +34,14 @@ spec:
           ports:
             - containerPort: 8000
           resources:
-            limits:
+            requests:
+              cpu: "2"
+              memory: 16Gi
               nvidia.com/gpu: {{ .Values.gpuCount }}
-          startupProbe:          # model download + load can take minutes
+            limits:
+              memory: 24Gi
+              nvidia.com/gpu: {{ .Values.gpuCount }}
+          startupProbe:          # 60 checks x 10s = up to 10 minutes to download/load the model
             httpGet:
               path: /health
               port: 8000
