@@ -14,6 +14,9 @@ spec:
       labels:
         app: {{ .Release.Name }}-vllm
     spec:
+      {{- if .Values.runtimeClassName }}
+      runtimeClassName: {{ .Values.runtimeClassName }}   # "nvidia" on k3s; empty on EKS
+      {{- end }}
       tolerations:          # GPU nodes are often tainted to keep ordinary pods off them
         - key: nvidia.com/gpu
           operator: Exists

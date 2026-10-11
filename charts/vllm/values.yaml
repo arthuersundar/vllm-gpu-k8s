@@ -21,3 +21,5 @@ startupTimeoutChecks: 60      # x 10s = up to 10 minutes to download/load the mo
 
 service:
   port: 8000
+
+runtimeClassName: "k3s"          # set to "nvidia" on k3s; leave empty on EKS
