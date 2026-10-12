@@ -23,3 +23,5 @@ service:
   port: 8000
 
 runtimeClassName: "nvidia"          # set to "nvidia" on k3s; leave empty on EKS
+
+extraArgs: []                 # extra vLLM flags, e.g. tool calling

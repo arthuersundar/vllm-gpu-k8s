@@ -28,6 +28,9 @@ spec:
           args:
             - --model={{ .Values.model }}
             - --max-model-len={{ .Values.maxModelLen }}
+            {{- range .Values.extraArgs }}
+            - {{ . | quote }}
+            {{- end }}
           env:
             - name: VLLM_API_KEY
               valueFrom:
