@@ -2,9 +2,7 @@
 
 [GitHub Repo](https://github.com/arthuersundar/vllm-gpu-k8s)
 
-A Helm chart for serving open LLMs with [vLLM](https://github.com/vllm-project/vllm)
-on Kubernetes GPU nodes, plus throughput and cost benchmarks showing when
-self-hosting pays off.
+Optimized vLLM Model Serving on Kubernetes infrastructure. Features multi-tenant GPU scheduling setups, custom Helm charts, and cost-per-token performance benchmarks.
 
 **Status:** deployed and benchmarked on a Kubernetes GPU node (k3s on a rented GPU VM),
 with a chat UI (Open WebUI) and tool calling working end to end. Same chart prepared
